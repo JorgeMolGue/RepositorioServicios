@@ -13,11 +13,11 @@ jobs:
         uses: hashicorp/setup-terraform@v3
       - name: aws credecials
         uses: aws-actions/configure-aws-credentials@v4
-        with: 
+        with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: us-east-1
-          aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: "us-east-1"  # Cambia a la región de AWS que estás usando
       - name: init terraform
         run: terraform init
         working-directory: .
