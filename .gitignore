@@ -2,4 +2,4 @@ conexion_VPC/.terraform
 conexion_VPC/terraform.tfstate
 conexion_VPC/terraform.lock.hcl
 conexion_VPC/terraform.tfstate.backup
-conexion_VPC/.terraform/providers/registry.terraform.io/hashicorp/aws/5.73.0/windows_amd64/terraform-provider-aws_v5.73.0_x5.exe
+VPC/
