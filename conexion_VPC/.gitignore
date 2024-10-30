@@ -1,5 +1,5 @@
-conexion_VPC/.terraform
-conexion_VPC/terraform.tfstate
-conexion_VPC/terraform.lock.hcl
-conexion_VPC/terraform.tfstate.backup
-VPC/
+.terraform
+terraform.tfstate
+terraform.lock.hcl
+terraform.tfstate.backup
+../VPC/
