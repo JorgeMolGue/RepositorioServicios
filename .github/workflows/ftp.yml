@@ -1,4 +1,4 @@
-name: servidor proftpd
+name: proft
 
 on:
   workflow_dispatch:
@@ -39,12 +39,12 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: ./conexion_VPC
 
-      # Guardar el archivo terraform.tfstate en la caché
-      - name: Cache Terraform State
-        uses: actions/cache@v3
+      # Guardar el archivo terraform.tfstate como artefacto
+      - name: Upload Terraform State as Artifact
+        uses: actions/upload-artifact@v4
         with:
-          path: terraform.tfstate
-          key: terraform-state-${{ github.run_id }}
+          name: terraform_state
+          path: ./conexion_VPC/terraform.tfstate
 
   upload_to_s3:
     runs-on: ubuntu-latest
@@ -59,16 +59,18 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: "us-east-1"
 
-      # Restaurar el archivo terraform.tfstate desde la caché
-      - name: Restore Terraform State from Cache
-        uses: actions/cache@v3
+      # Descargar el artefacto terraform.tfstate y guardarlo en la caché
+      - name: Download Terraform State Artifact
+        uses: actions/download-artifact@v4
         with:
-          path: terraform.tfstate
-          key: terraform-state-${{ github.run_id }}
-          restore-keys: |
-            terraform-state-
+          name: terraform_state
+          path: ./terraform_cache
 
-      # Subir el archivo restaurado al bucket de S3
+      # Mover el archivo descargado al nombre esperado para subirlo a S3
+      - name: Move State File to Root Directory
+        run: mv ./terraform_cache/terraform.tfstate terraform.tfstate
+
+      # Subir el archivo a S3
       - name: Upload Terraform State to S3
         run: |
           aws s3 cp terraform.tfstate s3://artefacto-ftp/terraform_state.tfstate
