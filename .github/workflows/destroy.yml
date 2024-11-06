@@ -27,12 +27,12 @@ jobs:
         with:
           terraform_version: 1.5.0
 
-      # Paso 4: Inicializar Terraform (esto descarga el estado desde el backend remoto)
+      # Paso 4: Inicializar Terraform (que configurará el backend remoto)
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./conexion_VPC
 
-      # Paso 5: Verificar el estado actual de los recursos (esto refresca el estado si es necesario)
+      # Paso 5: Verificar el estado de los recursos
       - name: Terraform Refresh
         run: terraform refresh
         working-directory: ./conexion_VPC
