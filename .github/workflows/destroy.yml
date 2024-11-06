@@ -21,29 +21,43 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: "us-east-1"
 
-      # Paso 3: Descargar el archivo terraform.tfstate desde S3 (si estás usando artefactos)
+      # Paso 3: Verificar si el archivo terraform_state.tfstate existe en S3
+      - name: Check if terraform_state.tfstate exists in S3
+        run: |
+          echo "Checking if terraform_state.tfstate exists in S3..."
+          aws s3 ls s3://artefacto-ftp/terraform_state.tfstate || { echo "terraform_state.tfstate not found in S3"; exit 1; }
+
+      # Paso 4: Descargar el archivo terraform_state desde S3
       - name: Download Terraform State from S3
         run: |
           echo "Downloading terraform_state from S3..."
-          aws s3 cp s3://artefacto-ftp/terraform_state.tfstate ./conexion_VPC/terraform.tfstate || { echo "Failed to download terraform_state.tfstate from S3"; exit 1; }
+          aws s3 cp s3://artefacto-ftp/terraform_state.tfstate ./conexion_VPC/terraform_state.tfstate || { echo "Failed to download terraform_state.tfstate from S3"; exit 1; }
 
-      # Paso 4: Instalar Terraform
+      # Paso 5: Verificar que el archivo terraform_state.tfstate se haya descargado correctamente
+      - name: Verify Terraform State File Download
+        run: |
+          if [ ! -f ./conexion_VPC/terraform_state.tfstate ]; then
+            echo "Terraform state file not found!"
+            exit 1
+          fi
+
+      # Paso 6: Instalar Terraform
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.0
 
-      # Paso 5: Inicializar Terraform (con backend remoto)
+      # Paso 7: Inicializar Terraform (esto configurará el backend remoto)
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./conexion_VPC
 
-      # Paso 6: Ejecutar Terraform Destroy
+      # Paso 8: Ejecutar Terraform Destroy
       - name: Run Terraform Destroy
         run: terraform destroy -auto-approve
         working-directory: ./conexion_VPC
 
-      # Paso 7: Eliminar el archivo terraform_state desde S3 (si es necesario)
+      # Paso 9: Eliminar el archivo terraform_state desde S3 (si es necesario)
       - name: Delete Terraform State File from S3
         run: |
           echo "Deleting terraform_state from S3..."
