@@ -19,55 +19,25 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: "us-east-1"  # Asegúrate de que esta región sea correcta
+          aws-region: "us-east-1"
 
-      # Paso 3: Verificar si el archivo terraform_state.tfstate existe en el bucket S3
-      - name: Check if terraform_state.tfstate exists in S3
-        run: |
-          echo "Checking if terraform_state.tfstate exists in S3..."
-          aws s3 ls s3://artefacto-ftp/terraform_state.tfstate || { echo "terraform_state.tfstate not found in S3!"; exit 1; }
-
-      # Paso 4: Descargar el archivo terraform_state desde S3
-      - name: Download Terraform State from S3
-        run: |
-          echo "Downloading terraform_state from S3..."
-          aws s3 cp s3://artefacto-ftp/terraform_state.tfstate ./conexion_VPC/terraform_state.tfstate || { echo "Failed to download terraform_state.tfstate from S3"; exit 1; }
-
-      # Paso 5: Listar archivos del directorio para verificar la descarga
-      - name: List files after downloading Terraform state
-        run: |
-          ls -l ./conexion_VPC
-
-      # Paso 6: Verificar que el archivo terraform_state.tfstate se haya descargado correctamente
-      - name: Verify Terraform State File Download
-        run: |
-          if [ ! -f ./conexion_VPC/terraform_state.tfstate ]; then
-            echo "Terraform state file not found!"
-            exit 1
-          fi
-
-      # Paso 7: Instalar Terraform
+      # Paso 3: Instalar Terraform
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.0
 
-      # Paso 8: Inicializar Terraform
+      # Paso 4: Inicializar Terraform (que configurará el backend remoto)
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./conexion_VPC
 
-      # Paso 9: Ejecutar Terraform Plan (para verificar qué destruiría)
-      - name: Run Terraform Plan (to verify resources to destroy)
-        run: terraform plan -destroy
-        working-directory: ./conexion_VPC
-
-      # Paso 10: Ejecutar Terraform Destroy
+      # Paso 5: Ejecutar Terraform Destroy
       - name: Run Terraform Destroy
         run: terraform destroy -auto-approve
         working-directory: ./conexion_VPC
 
-      # Paso 11: Eliminar el archivo terraform_state desde S3 (si es necesario)
+      # Paso 6: Eliminar el archivo terraform_state desde S3 (si es necesario)
       - name: Delete Terraform State File from S3
         run: |
           echo "Deleting terraform_state from S3..."
