@@ -8,55 +8,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      
-name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      
-name: Install Terraform
-      uses: hashicorp/setup-terraform@v3
-      with:
-        terraform_version: 1.5.0
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.0
 
-      
-name: Configure AWS Credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-        aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-        aws-region: "us-east-1"
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: "us-east-1"
 
-      
-name: clave ssh
-      run: echo "${{ secrets.SSH_PRIVATE_KEY }}" 
-name: Terraform Init
-run: terraform init
-working-directory: ./conexion_VPC
+      - name: clave ssh
+        run: echo "${{ secrets.SSH_PRIVATE_KEY }}"
 
-      
-name: Terraform Plan
-      run: terraform plan
-      working-directory: ./conexion_VPC
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./conexion_VPC
 
-      
-name: Terraform Apply
-      run: terraform apply -auto-approve
-      working-directory: ./conexion_VPC
+      - name: Terraform Plan
+        run: terraform plan
+        working-directory: ./conexion_VPC
 
-      
-name: Upload Terraform State
-      uses: actions/upload-artifact@v4
-      with:
-        name: terraform_state
-        path: terraform.tfstate
+      - name: Terraform Apply
+        run: terraform apply -auto-approve
+        working-directory: ./conexion_VPC
 
+      - name: Upload Terraform State
+        uses: actions/upload-artifact@v4
+        with:
+          name: terraform_state
+          path: terraform.tfstate
 
-      
-name: Rename Terraform State
-      run: mv terraform.tfstate terraform_state.tfstate
+      - name: Rename Terraform State
+        run: mv terraform.tfstate terraform_state.tfstate
 
-      
-name: Upload Terraform State to S3
-      run: |
-        aws s3 cp terraform_state.tfstate s3://artefacto-tf/terraform_state.tfstate
+      - name: Upload Terraform State to S3
+        run: |
+          aws s3 cp terraform_state.tfstate s3://artefacto-tf/terraform_state.tfstate
