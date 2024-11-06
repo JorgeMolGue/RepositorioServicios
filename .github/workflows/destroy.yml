@@ -1,20 +1,15 @@
-name: proft
+name: terraform destroy
 
 on:
   workflow_dispatch:
 
 jobs:
-  terraform_destroy:
+  destroy:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: 1.5.0
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -24,26 +19,30 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: "us-east-1"
 
-      - name: Clave SSH
-        run: echo "${{ secrets.SSH_PRIVATE_KEY }}"
+      - name: Download Terraform State from S3
+        run: |
+          aws s3 cp s3://artefacto-tf/terraform_state.tfstate ./conexion_VPC/terraform.tfstate
 
-      # Descargar el artefacto terraform_state.tfstate
-      - name: Download Terraform State Artifact
-        uses: actions/download-artifact@v4
+      - name: Verify Terraform State File Download
+        run: |
+          if [ ! -f ./conexion_VPC/terraform.tfstate ]; then
+            echo "Terraform state file not found!"
+            exit 1
+          fi
+
+      - name: Install Terraform
+        uses: hashicorp/setup-terraform@v3
         with:
-          name: terraform_state
-          path: ./conexion_VPC
+          terraform_version: 1.5.0
 
-      # Renombrar el archivo descargado a terraform.tfstate para que Terraform lo reconozca
-      - name: Rename State File
-        run: mv ./conexion_VPC/terraform_state.tfstate ./conexion_VPC/terraform.tfstate
-
-      # Inicializar Terraform
-      - name: Terraform Init
+      - name: Initialize Terraform
         run: terraform init
         working-directory: ./conexion_VPC
 
-      # Destruir la infraestructura
-      - name: Terraform Destroy
+      - name: Run Terraform Destroy
         run: terraform destroy -auto-approve
         working-directory: ./conexion_VPC
+
+      - name: Delete Terraform State File from S3
+        run: |
+          aws s3 rm s3://artefacto-tf/terraform_state.tfstate
