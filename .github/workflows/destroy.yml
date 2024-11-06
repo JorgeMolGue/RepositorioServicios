@@ -27,7 +27,12 @@ jobs:
           echo "Downloading terraform_state from S3..."
           aws s3 cp s3://artefacto-ftp/terraform_state.tfstate ./conexion_VPC/terraform_state.tfstate || { echo "Failed to download terraform_state.tfstate from S3"; exit 1; }
 
-      # Paso 4: Verificar que el archivo terraform_state.tfstate se haya descargado correctamente
+      # Paso 4: Listar archivos del directorio para verificar la descarga
+      - name: List files after downloading Terraform state
+        run: |
+          ls -l ./conexion_VPC
+
+      # Paso 5: Verificar que el archivo terraform_state.tfstate se haya descargado correctamente
       - name: Verify Terraform State File Download
         run: |
           if [ ! -f ./conexion_VPC/terraform_state.tfstate ]; then
@@ -35,23 +40,28 @@ jobs:
             exit 1
           fi
 
-      # Paso 5: Instalar Terraform
+      # Paso 6: Instalar Terraform
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.0
 
-      # Paso 6: Inicializar Terraform
+      # Paso 7: Inicializar Terraform
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./conexion_VPC
 
-      # Paso 7: Ejecutar Terraform Destroy
+      # Paso 8: Ejecutar Terraform Plan (para verificar qué destruiría)
+      - name: Run Terraform Plan (to verify resources to destroy)
+        run: terraform plan -destroy
+        working-directory: ./conexion_VPC
+
+      # Paso 9: Ejecutar Terraform Destroy
       - name: Run Terraform Destroy
         run: terraform destroy -auto-approve
         working-directory: ./conexion_VPC
 
-      # Paso 8: Eliminar el archivo terraform_state desde S3 (si es necesario)
+      # Paso 10: Eliminar el archivo terraform_state desde S3 (si es necesario)
       - name: Delete Terraform State File from S3
         run: |
           echo "Deleting terraform_state from S3..."
