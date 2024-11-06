@@ -60,4 +60,4 @@ jobs:
 
       - name: Upload Terraform State to S3
         run: |
-          aws s3 cp terraform_state.tfstate s3://artefacto-tf/terraform_state.tfstate
+          aws s3 cp terraform_state.tfstate s3://artefacto-ftp/terraform_state.tfstate
