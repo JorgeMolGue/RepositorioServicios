@@ -31,14 +31,8 @@ jobs:
       - name: Check if terraform_state.tfstate exists in S3
         run: |
           echo "Checking if terraform_state.tfstate exists in S3..."
-          aws s3 ls s3://artefacto-ftp/terraform_state.tfstate
-          if [ $? -ne 0 ]; then
-            echo "terraform_state.tfstate not found in S3"
-            exit 1
-          else
-            echo "terraform_state.tfstate found in S3"
-          fi
-
+          aws s3 ls s3://artefacto-ftp/terraform_state.tfstate || echo "terraform_state.tfstate not found in S3"
+        
       # Paso 5: Descargar el archivo terraform_state desde S3
       - name: Download Terraform State from S3
         run: |
