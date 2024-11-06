@@ -41,14 +41,14 @@ jobs:
         with:
           terraform_version: 1.5.0
 
-      # Paso 6: Inicializar Terraform
+      # Paso 6: Inicializar Terraform (con estado local si es necesario)
       - name: Initialize Terraform
-        run: terraform init
+        run: terraform init -backend-config="bucket=artefacto-ftp" -backend-config="key=terraform_state.tfstate" -backend-config="region=us-east-1"
         working-directory: ./conexion_VPC
 
       # Paso 7: Ejecutar Terraform Destroy
       - name: Run Terraform Destroy
-        run: terraform destroy -auto-approve
+        run: terraform destroy -auto-approve -state=./conexion_VPC/terraform_state.tfstate
         working-directory: ./conexion_VPC
 
       # Paso 8: Eliminar el archivo terraform_state desde S3 (si es necesario)
