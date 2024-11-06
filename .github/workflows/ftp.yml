@@ -20,6 +20,9 @@ jobs:
       - name: clave ssh
         run: echo "${{ secrets.SSH_PRIVATE_KEY }}"
         
+      - name: Remove terraform lock file
+        run: rm -f ./conexion_VPC/terraform.lock.hcl
+
       - name: terraform init
         run: terraform init
         working-directory: ./conexion_VPC
