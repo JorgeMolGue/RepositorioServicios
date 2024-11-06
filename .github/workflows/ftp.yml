@@ -18,7 +18,7 @@ jobs:
           aws-region: "us-east-1"  # Cambia a la región de AWS que estás usando
 
       - name: clave ssh
-        run: echo "${{ secret.SSH_PRIVATE_KEY }}"
+        run: echo "${{ secrets.SSH_PRIVATE_KEY }}"
         
       - name: terraform init
         run: terraform init
