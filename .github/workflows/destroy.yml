@@ -1,4 +1,4 @@
-name: Destroy Infrastructure
+name: proft
 
 on:
   workflow_dispatch:
