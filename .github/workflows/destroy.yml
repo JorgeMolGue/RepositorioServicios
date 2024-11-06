@@ -21,23 +21,29 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: "us-east-1"
 
-      # Paso 3: Instalar Terraform
+      # Paso 3: Descargar el archivo terraform.tfstate desde S3 (si estás usando artefactos)
+      - name: Download Terraform State from S3
+        run: |
+          echo "Downloading terraform_state from S3..."
+          aws s3 cp s3://artefacto-ftp/terraform_state.tfstate ./conexion_VPC/terraform.tfstate || { echo "Failed to download terraform_state.tfstate from S3"; exit 1; }
+
+      # Paso 4: Instalar Terraform
       - name: Install Terraform
         uses: hashicorp/setup-terraform@v3
         with:
           terraform_version: 1.5.0
 
-      # Paso 4: Inicializar Terraform (que configurará el backend remoto)
+      # Paso 5: Inicializar Terraform (con backend remoto)
       - name: Initialize Terraform
         run: terraform init
         working-directory: ./conexion_VPC
 
-      # Paso 5: Ejecutar Terraform Destroy
+      # Paso 6: Ejecutar Terraform Destroy
       - name: Run Terraform Destroy
         run: terraform destroy -auto-approve
         working-directory: ./conexion_VPC
 
-      # Paso 6: Eliminar el archivo terraform_state desde S3 (si es necesario)
+      # Paso 7: Eliminar el archivo terraform_state desde S3 (si es necesario)
       - name: Delete Terraform State File from S3
         run: |
           echo "Deleting terraform_state from S3..."
