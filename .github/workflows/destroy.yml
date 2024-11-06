@@ -27,12 +27,16 @@ jobs:
       - name: Clave SSH
         run: echo "${{ secrets.SSH_PRIVATE_KEY }}"
 
-      # Descargar el artefacto terraform.tfstate
+      # Descargar el artefacto terraform_state.tfstate
       - name: Download Terraform State Artifact
         uses: actions/download-artifact@v4
         with:
           name: terraform_state
           path: ./conexion_VPC
+
+      # Renombrar el archivo descargado a terraform.tfstate para que Terraform lo reconozca
+      - name: Rename State File
+        run: mv ./conexion_VPC/terraform_state.tfstate ./conexion_VPC/terraform.tfstate
 
       - name: Terraform Init
         run: terraform init
