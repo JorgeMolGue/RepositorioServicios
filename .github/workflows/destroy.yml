@@ -31,10 +31,10 @@ jobs:
       - name: Download Terraform State Artifact
         uses: actions/download-artifact@v4
         with:
-          name: terraform_state
+          name: terraform_state  # Coincide con el nombre en el workflow de subida
           path: ./conexion_VPC
 
-      # Renombrar el archivo descargado a terraform.tfstate para que Terraform lo reconozca
+      # Renombrar el archivo descargado para que Terraform lo reconozca
       - name: Rename State File
         run: mv ./conexion_VPC/terraform_state.tfstate ./conexion_VPC/terraform.tfstate
 
