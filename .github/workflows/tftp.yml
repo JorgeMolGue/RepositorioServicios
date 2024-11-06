@@ -1,0 +1,42 @@
+name: Servidor FTP para destroy
+on:
+  workflow_dispatch:
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: install terraform
+        uses: hashicorp/setup-terraform@v3
+      - name: aws credecials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region: "us-east-1"  # Cambia a la región de AWS que estás usando
+
+      - name: clave ssh
+        run: echo "${{ secret.SSH_PRIVATE_KEY }}"
+        
+      - name: terraform init
+        run: terraform init
+        working-directory: ./conexion_VPC
+      - name: Terraform plan
+        run: terraform plan 
+      - name: Terraform apply
+        run: terraform apply -auto-approve
+        working-directory: ./conexion_VPC
+      - name: upload terraform state
+        uses: actions/upload-artifact@v4
+        with: 
+          name: terraform_state
+          path: terraform.tfstate
+
+      - name: Rename Terraform state
+        run: mv terraform.tfstate terraform_state.tfstate
+
+      - name: Upload Terraform State to S3
+        run: |
+          aws s3 cp terraform_state.tfstate s3://artefacto-tf/terraform_state.tfstate
