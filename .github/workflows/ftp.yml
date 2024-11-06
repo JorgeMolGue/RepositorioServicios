@@ -1,4 +1,4 @@
-name: proft
+name: servidor proftpd
 
 on:
   workflow_dispatch:
