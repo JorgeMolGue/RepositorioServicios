@@ -153,3 +153,14 @@ resource "aws_vpc_peering_connection_accepter" "accept" {
   vpc_peering_connection_id = aws_vpc_peering_connection.vpc_peering.id
   auto_accept               = true
 }
+
+
+# Bucket de S3
+resource "aws_s3_bucket" "my_bucket" {
+  bucket = var.bucket_name
+  acl    = "private"
+
+  tags = {
+    Name = var.bucket_name
+  }
+}
