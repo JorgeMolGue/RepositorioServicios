@@ -68,3 +68,8 @@ variable "key_name" {
   default     = "ssh" 
 }
 
+variable "bucket_name" {
+  description = "Nombre del bucket S3"
+  default     = "ftp-storage"
+}
+
