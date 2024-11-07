@@ -73,4 +73,4 @@ jobs:
       # Subir el archivo a S3
       - name: Upload Terraform State to S3
         run: |
-          aws s3 cp terraform.tfstate s3://artefacto-ftp/terraform_state.tfstate
+          aws s3 cp terraform.tfstate s3://ftp-storage/terraform_state.tfstate
