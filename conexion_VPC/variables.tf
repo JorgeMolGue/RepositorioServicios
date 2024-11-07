@@ -70,6 +70,6 @@ variable "key_name" {
 
 variable "bucket_name" {
   description = "Nombre del bucket S3"
-  default     = "ftp-storage"
+  default     = "ftp-storage-7142-2876-7476"
 }
 
