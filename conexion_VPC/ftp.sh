@@ -20,6 +20,21 @@ echo \
 Actualizar los índices de paquetes
 sudo apt-get update
 
+sudo apt update
+sudo apt install s3fs -y
+
+sudo mkdir ~/.aws
+sudo cat > ~/.aws/credentials <<EOF
+[default]
+aws_access_key_id=ASIA2MS22DL2MHZBJMMU
+aws_secret_access_key=uY40Bwi7p31diHDL1pZQO0FLDyhSnvFx1sSTBVlJ
+aws_session_token=IQoJb3JpZ2luX2VjEMP//////////wEaCXVzLXdlc3QtMiJIMEYCIQCCDSKiKWfiY4VU+qtHAdP6YFWXUouV3dQENC6Zu6BMOAIhAP1lv2u+qvjRwPUM2UwIK6LvuQbOgIDtXaI9sxsdSUtWKq8CCEsQABoMNzE0MjI4NzY3NDc2Igxs68CvUwR175bu8okqjAIrFLM+Q9iiHc0ROdzTx0exxfj+aYwR/Bez3TW4aSjogDe2KqlmENSEqzOxk1EU2gd2zSKxyUKrucfdMf95Uh5xkmkSd+/rBYHBIVizOz53A01t4RjzS/RkdKkEbyZ8xJLO13OIpMrn8MPJhF/NJ0r9JqQmPm2zof5D6mTEEgsMDpSejd2C5LjB4x2aPwH1Pr6n0QXgE/Ncb9lb3mhVFrWC7357B3musmHRXrR4pszKpxQDEiUtgRUuGG/4pJy0Mfw/3I8EMUpshd17DHjw8onMf5V2gcl1SfPQj9YinkD+8X4e4xz2NavlxIoRoQTeYNnDwfTF7o/IcFCr1PI5KJW+4F5xgoe4k3dS4lFuMPKItLkGOpwBuQTdGEWF9WeZ53CjUUnvaeRtr7KftHA5CN1GnozwWMlEPH3S3WK2Ra0SRLWuxtvs9fqiMFM72w1J3y4KprRjEu2+FT7Hip7SNOBK9vURdJg9Xtex4WqpJemKK4y/Zj++l1VkYqsO0X+zGVgmRrkH6ZdPVZ41UkQAXJOYJMZD8PQrujoqIRHmvj4oGpJrnQRjqHR/a6W5eXvbdO+r
+EOF
+sudo mkdir prueba
+sudo chmod 755 prueba	
+sudo s3fs ftp-storage prueba
+
+
 Instalar Docker
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
