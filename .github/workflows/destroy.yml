@@ -21,7 +21,7 @@ jobs:
 
       - name: Download Terraform State from S3
         run: |
-          aws s3 cp s3://artefacto-ftp/terraform_state.tfstate ./terraform.tfstate
+          aws s3 cp s3://ftp-storage/terraform_state.tfstate ./terraform.tfstate
 
       - name: Verify Terraform State File Exists
         run: |
@@ -43,4 +43,4 @@ jobs:
 
       - name: Delete Terraform State File from S3
         run: |
-          aws s3 rm s3://artefacto-ftp/terraform_state.tfstate
+          aws s3 rm s3://ftp-storage/terraform_state.tfstate
