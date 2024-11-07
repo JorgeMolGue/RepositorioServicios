@@ -32,7 +32,7 @@ aws_session_token=IQoJb3JpZ2luX2VjEMP//////////wEaCXVzLXdlc3QtMiJIMEYCIQCCDSKiKW
 EOF
 sudo mkdir prueba
 sudo chmod 755 prueba	
-sudo s3fs ftp-storage prueba
+sudo s3fs ftp-storage-7142-2876-7476 prueba
 
 
 Instalar Docker
