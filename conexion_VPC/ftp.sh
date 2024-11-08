@@ -51,7 +51,6 @@ echo "FROM debian:latest" >> Dockerfile
 echo "RUN apt-get update && apt-get install -y proftpd && apt install nano -y " >> Dockerfile
 echo "RUN echo 'DefaultRoot ~' >> /etc/proftpd/proftpd.conf" >> Dockerfile
 echo "RUN echo 'PassivePorts 3040 3060' >> /etc/proftpd/proftpd.conf" >> Dockerfile
-echo "RUN echo 'MasqueradeAddress 44.199.206.59' >> /etc/proftpd/proftpd.conf" >> Dockerfile
 echo "EXPOSE 20 21 3040-3060" >> Dockerfile
 echo "RUN useradd -m -s /bin/bash jorge && echo 'jorge:jorge' | chpasswd" >> Dockerfile
 echo 'CMD ["proftpd", "--nodaemon"]' >> Dockerfile
