@@ -34,7 +34,6 @@ sudo mkdir -p /home/jorge/bucket
 sudo chmod 755 /home/jorge/bucket 	
 sudo s3fs ftp-storage-7142-2876-7476 /home/jorge/bucket -o allow_other
 
-
 Instalar Docker
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
@@ -61,4 +60,4 @@ Construir la imagen de Docker
 sudo docker build -t myproftpd .
 
 Ejecutar el contenedor de ProFTPD
-sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3041:3041 -p 3050:3050 myproftpd
+sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3041:3041 -p 3050:3050 -v /home/jorge/bucket:/home/jorge myproftpd
