@@ -59,4 +59,4 @@ Construir la imagen de Docker
 sudo docker build -t myproftpd .
 
 Ejecutar el contenedor de ProFTPD
-sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3041:3041 -p 3050:3050 -v /home/jorge/bucket:/home/jorge/bucket myproftpd
+sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3041:3041 -p 3050:3050 -v /home/jorge/bucket:/home/jorge myproftpd
