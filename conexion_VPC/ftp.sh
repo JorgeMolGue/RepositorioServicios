@@ -49,7 +49,7 @@ Crear el Dockerfile
 touch Dockerfile
 echo "FROM debian:latest" >> Dockerfile
 echo "RUN apt-get update && apt-get install -y proftpd && apt install nano -y " >> Dockerfile
-echo "RUN echo 'DefaultRoot ~' >> /etc/proftpd/proftpd.conf" >> Dockerfile
+echo "RUN echo 'DefaultRoot /home/jorge/bucket' >> /etc/proftpd/proftpd.conf" >> Dockerfile
 echo "RUN echo 'PassivePorts 3040 3060' >> /etc/proftpd/proftpd.conf" >> Dockerfile
 echo "EXPOSE 20 21 3040-3060" >> Dockerfile
 echo "RUN useradd -m -s /bin/bash jorge && echo 'jorge:jorge' | chpasswd" >> Dockerfile
@@ -59,4 +59,4 @@ Construir la imagen de Docker
 sudo docker build -t myproftpd .
 
 Ejecutar el contenedor de ProFTPD
-sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3041:3041 -p 3050:3050 -v /home/jorge/bucket:/home/jorge myproftpd
+sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3041:3041 -p 3050:3050 -v /home/jorge/bucket:/home/jorge/bucket myproftpd
