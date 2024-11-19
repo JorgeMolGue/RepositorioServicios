@@ -53,21 +53,20 @@ echo "RUN echo 'DefaultRoot ~' >> /etc/proftpd/proftpd.conf" >> Dockerfile
 echo "RUN echo 'PassivePorts 3040 3060' >> /etc/proftpd/proftpd.conf" >> Dockerfile
 echo "EXPOSE 20 21 3040-3060" >> Dockerfile
 echo "RUN useradd -m -s /bin/bash jorge && echo 'jorge:jorge' | chpasswd" >> Dockerfile
+
+
+RUN echo '<Anonymous ~ftp>' >> /etc/proftpd/proftpd.conf && \
+    echo '  User ftp' >> /etc/proftpd/proftpd.conf && \
+    echo '  Group nogroup' >> /etc/proftpd/proftpd.conf && \
+    echo '  UserAlias anonymous ftp' >> /etc/proftpd/proftpd.conf && \
+    echo '  RequireValidShell no' >> /etc/proftpd/proftpd.conf && \
+    echo '  <Directory /home/jorge/bucket>' >> /etc/proftpd/proftpd.conf && \
+    echo '    <Limit WRITE>' >> /etc/proftpd/proftpd.conf && \
+    echo '      Deny All' >> /etc/proftpd/proftpd.conf && \
+    echo '    </Limit>' >> /etc/proftpd/proftpd.conf && \
+    echo '  </Directory>' >> /etc/proftpd/proftpd.conf && \
+    echo '</Anonymous>' >> /etc/proftpd/proftpd.conf
 echo 'CMD ["proftpd", "--nodaemon"]' >> Dockerfile
-
-Añadir configuración para acceso anónimo solo lectura
-echo "RUN echo <Anonymous ~ftp>" >> Dockerfile
-echo "RUN echo User ftp" >> Dockerfile
-echo "RUN echo Group nogroup" >> Dockerfile
-echo "RUN echo UserAlias anonymous ftp" >> Dockerfile
-echo "RUN echo RequireValidShell no" >> Dockerfile
-echo "RUN echo <Directory /home/jorge/bucket>" >> Dockerfile
-echo "RUN echo    <Limit WRITE>" >> Dockerfile
-echo "RUN echo        Deny All" >> Dockerfile
-echo "RUN echo    </Limit>" >> Dockerfile
-echo "RUN echo </Directory>" >> Dockerfile
-echo "RUN echo </Anonymous>" >> Dockerfile
-
 
 Construir la imagen de Docker
 sudo docker build -t myproftpd .
