@@ -24,7 +24,7 @@ sudo apt-get update
 sudo apt install s3fs -y
 
 # Crear el directorio y archivo de credenciales de AWS
-sudo mkdir ~/.aws
+sudo mkdir -p ~/.aws
 sudo cat > ~/.aws/credentials <<EOF
 [default]
 aws_access_key_id=ASIA2MS22DL2EYKFFVFA
@@ -33,9 +33,9 @@ aws_session_token=IQoJb3JpZ2luX2VjEOL//////////wEaCXVzLXdlc3QtMiJHMEUCIGcGG4iehv
 EOF
 
 # Crear un directorio para montar el bucket S3
-sudo mkdir -p /home/jorge/bucket
-sudo chmod 755 /home/jorge/bucket
-sudo s3fs ftp-storage-7142-2876-7476 /home/jorge/bucket -o allow_other
+sudo mkdir -p /home/jorge/archivos_ftp
+sudo chmod 755 /home/jorge/archivos_ftp
+sudo s3fs ftp-storage-7142-2876-7476 /home/jorge/archivos_ftp -o allow_other
 
 # Instalar Docker
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
@@ -49,30 +49,30 @@ mkdir -p /home/docker
 cd /home/docker
 
 # Crear el Dockerfile para ProFTP
-touch Dockerfile
-echo "FROM debian:latest" >> Dockerfile
-echo "RUN apt-get update && apt-get install -y proftpd && apt install nano -y " >> Dockerfile
-echo "RUN echo 'DefaultRoot ~' >> /etc/proftpd/proftpd.conf" >> Dockerfile
-echo "RUN echo 'PassivePorts 3040 3060' >> /etc/proftpd/proftpd.conf" >> Dockerfile
-echo "EXPOSE 20 21 3040-3060" >> Dockerfile
-echo "RUN useradd -m -s /bin/bash jorge && echo 'jorge:jorge' | chpasswd" >> Dockerfile
-
-# Añadir configuración para acceso anónimo
-echo 'RUN echo "<Anonymous ~ftp>" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "  User ftp" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "  Group nogroup" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "  UserAlias anonymous ftp" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "  RequireValidShell no" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "  <Directory /home/jorge/bucket>" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "    <Limit WRITE>" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "      Deny All" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "    </Limit>" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "  </Directory>" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'RUN echo "</Anonymous>" >> /etc/proftpd/proftpd.conf' >> Dockerfile
-echo 'CMD ["proftpd", "--nodaemon"]' >> Dockerfile
+cat <<EOF > Dockerfile
+FROM debian:latest
+RUN apt-get update && apt-get install -y proftpd nano
+RUN echo 'DefaultRoot ~' >> /etc/proftpd/proftpd.conf
+RUN echo 'PassivePorts 3040 3060' >> /etc/proftpd/proftpd.conf
+EXPOSE 20 21 3040-3060
+RUN useradd -m -s /bin/bash jorge && echo 'jorge:jorge' | chpasswd
+RUN echo '<Anonymous /home/jorge/archivos_ftp>' >> /etc/proftpd/proftpd.conf && \
+    echo '  User ftp' >> /etc/proftpd/proftpd.conf && \
+    echo '  Group nogroup' >> /etc/proftpd/proftpd.conf && \
+    echo '  UserAlias anonymous ftp' >> /etc/proftpd/proftpd.conf && \
+    echo '  RequireValidShell no' >> /etc/proftpd/proftpd.conf && \
+    echo '  <Directory /home/jorge/archivos_ftp>' >> /etc/proftpd/proftpd.conf && \
+    echo '    <Limit WRITE>' >> /etc/proftpd/proftpd.conf && \
+    echo '      Deny All' >> /etc/proftpd/proftpd.conf && \
+    echo '    </Limit>' >> /etc/proftpd/proftpd.conf && \
+    echo '  </Directory>' >> /etc/proftpd/proftpd.conf && \
+    echo '</Anonymous>' >> /etc/proftpd/proftpd.conf
+CMD ["proftpd", "--nodaemon"]
+EOF
 
 # Construir la imagen de Docker
 sudo docker build -t myproftpd .
 
 # Ejecutar el contenedor de ProFTPD
-sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3041:3041 -p 3050:3050 -v /home/jorge/bucket:/home/jorge myproftpd
+sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3041:3041 -p 3050:3050 -v /home/jorge/archivos_ftp:/home/jorge myproftpd
+
