@@ -66,9 +66,15 @@ RUN useradd -m -s /bin/bash jorge && echo 'jorge:jorge' | chpasswd
 CMD ["proftpd", "--nodaemon"]
 EOF
 
+# Crear el directorio /home/jose para ser usado por el acceso FTP
+sudo mkdir -p /home/jorge
+sudo chown ftp:nogroup /home/jorge
+sudo chmod 755 /home/jorge
+
+
 # Construir la imagen de Docker
 sudo docker build -t myproftpd .
 
 # Ejecutar el contenedor
-sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3040-3060:3040-3060 -v /home/admin/ftp:/home/admin/ftp myproftpd
+sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3040-3060:3040-3060 -v /home/admin/ftp:/home/jorge myproftpd
 
