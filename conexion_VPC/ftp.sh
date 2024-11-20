@@ -70,5 +70,5 @@ EOF
 sudo docker build -t myproftpd .
 
 # Ejecutar el contenedor
-sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3040-3060:3040-3060 -v /home/admin/ftp:/home/jorge myproftpd
+sudo docker run -d --name proftpd -p 20:20 -p 21:21 -p 3040-3060:3040-3060 -v /home/admin/ftp:/home/admin/ftp myproftpd
 
