@@ -26,9 +26,9 @@ sudo apt install s3fs -y
 sudo mkdir ~/.aws
 sudo cat > ~/.aws/credentials <<EOF
 [default]
-aws_access_key_id=ASIA2MS22DL2EYKFFVFA
-aws_secret_access_key=CNVtxQRQAdY+asTvna84sqBUwH7TwCEghS+fOb2D
-aws_session_token=IQoJb3JpZ2luX2VjEOL//////////wEaCXVzLXdlc3QtMiJHMEUCIGcGG4iehvhDDSf/uo7Zhd9tlEdtdZaTQAcxLh0NvoEQAiEAwpzEk47dlLZZRCoCl2bhMqnTdknfOg2TCWCCnyzwOQsqrwIIehAAGgw3MTQyMjg3Njc0NzYiDKGWJaDD5oB7/dhooCqMAlI5Ypmo/j0o1t2PcIAgg6HNDiIAwiYDRh+qvpd3T4W8sjz0iydCW9av1MUmzggPEVLRiVIW5FYqhQvAUbMEpxNBiWpmXw2GMcZ9Zo4gEdhEs9Xm+sqxl5aD7wCSGDd0bgfxjJaG5mbjoVkrwVn8K9N7HQxWVelMSrk9mgRfnStXS/YdYwuI6TGZzn0hgMPvuc2Wl8YqCdQ8fPNMcYAZdHiPkymqX05DQnJ3+39hyQNTiyy2vbK3+9ONWyNnMghYBT8P2T3qF75ZAgGpKQPDUnExYRfEcK+Q5RRrd0tY7DN8ED4jolaCnEVeriEtm3dcnhg3eYVl1+tbFOJg0W9qG3U+Sqt2ch3sEZppKZ4w75DzuQY6nQFAgLEcu1mJ2Ok+/3oa3WMnlFOfJgQF3a3HAOFv8Qn5nAO8cn37VMEWkW83LHM6LM4LSDqOwpbAOF8iuOnbbBUADfr0Kc2731nVQ89mN8V7pMVuJU67PqUC0vw0i7mfepN3+tlPcjKX8Bj6bbPWhPuVWKoRahwtm71KL2jLnnGl30ib+KIuU2lPY4Pr+Jn7OVniNsgmXegyMx2tf7b8
+aws_access_key_id=ASIA2MS22DL2GSFX4K62
+aws_secret_access_key=mBL/6bo8ZeNCBciig3mdLrBHzOVOAGztLlqQ8JkC
+aws_session_token=IQoJb3JpZ2luX2VjEPH//////////wEaCXVzLXdlc3QtMiJIMEYCIQCsb7JjwGcWzbHuMulbtcTJUt5LfCfMh8t45f5dScbNUgIhAISu4mi4WydxCaCOwDFF0w1fs1PSDjx9QpI9PMjdeGQYKrgCCIr//////////wEQABoMNzE0MjI4NzY3NDc2Igx60HZmgU8zPNBCuh8qjALgxvOx+K5LCRHvLMbK94bPoOkdpepB9ma6pjYeldtM8mmYLgL1OfSprMYDBAUscTSDOrzCJVgClM/7hyxFcpVdLP2D88cMUowgV4ub7RsVeevIH/vpZi9NpXlklWkR1kyT+zUdD4QhKvMLavtoF6CGMnHNj0Ihj85Xz2KTWLjxgbl7CDY9UBQ4nOXKUsoI98ROKM6P1pnNBIOS6pYG2vLjZIshJ2vq1zPpxlTSzSSK2tVwPZ7NQ/kmn0KBRO+sLbq+HAuoSAGjc5qGP4ZZQ2UKUclsgmelgWc7IsKQJi/M4afmrx/M9hesogyBs7wwpymGMI/uWeHDMRywYtqd5jlM9usd0r6pvanqf1grMIHB9rkGOpwBuXF66PPS67be+eSbTEGuR09dOgzBWQv7Med6e4KdlYTKN+ker8B0gkkAKR0gzXlPR8WGGKIxKsjIo1nxrwGX8sCyI2zZbl+ZkWf8xPFoRqGn6GV9CyqmX5Foaxu7TnarOvg9Dr3ExQ6VTGDtQflgJaLdslzXuqKl1dMNjNBxEBj9dd4YEbTI7+q7hkS9L0IDWauF78/hWTlKfZ0k
 EOF
 sudo mkdir -p /home/jorge/bucket 
 sudo chmod 755 /home/jorge/bucket 	
@@ -47,10 +47,22 @@ cd /home/docker
 
 Crear el Dockerfile
 touch Dockerfile
-echo "FROM debian:latest" >> Dockerfile
-echo "RUN apt-get update && apt-get install -y proftpd && apt install nano -y " >> Dockerfile
-echo "RUN echo 'DefaultRoot ~' >> /etc/proftpd/proftpd.conf" >> Dockerfile
-echo "RUN echo 'PassivePorts 3040 3060' >> /etc/proftpd/proftpd.conf" >> Dockerfile
+echo "FROM debian:latest" > Dockerfile
+echo "RUN apt-get update && apt-get install -y proftpd nano" >> Dockerfile
+echo "RUN echo 'DefaultRoot ~' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo 'PassivePorts 3040 3060' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '<Anonymous ~ftp>' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '  User ftp' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '  Group nogroup' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '  UserAlias anonymous ftp' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '  RequireValidShell off' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '  MaxClients 10' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '  <Directory *>' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '    <Limit WRITE>' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '      DenyAll' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '    </Limit>' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '  </Directory>' >> /etc/proftpd/proftpd.conf && \\" >> Dockerfile
+echo "    echo '</Anonymous>' >> /etc/proftpd/proftpd.conf" >> Dockerfile
 echo "EXPOSE 20 21 3040-3060" >> Dockerfile
 echo "RUN useradd -m -s /bin/bash jorge && echo 'jorge:jorge' | chpasswd" >> Dockerfile
 echo 'CMD ["proftpd", "--nodaemon"]' >> Dockerfile
