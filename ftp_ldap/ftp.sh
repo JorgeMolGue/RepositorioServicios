@@ -25,8 +25,8 @@ sudo apt install s3fs -y
 
 # Configurar credenciales de AWS
 sudo mkdir -p ~/.aws
+sudo chown $USER:$USER ~/.aws
 sudo cat > ~/.aws/credentials <<EOF
-[default]
 [default]
 aws_access_key_id=ASIA2MS22DL2OS3CQ4QG
 aws_secret_access_key=FTVFzLnaMFiIi3zLBRy5LWhG+6cfkKWnl0jKziiw
