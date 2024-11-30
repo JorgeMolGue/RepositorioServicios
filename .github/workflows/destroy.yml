@@ -11,8 +11,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Verify Terraform Files
+        run: ls -l ./ftp_ldap
+
       - name: Remove Terraform Cache
         run: rm -rf .terraform .terraform.lock.hcl
+        working-directory: ./ftp_ldap
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -23,28 +27,19 @@ jobs:
           aws-region: "us-east-1"
 
       - name: Download Terraform State from S3
-        run: aws s3 cp s3://artefactos-jorge/terraform_state.tfstate ./terraform.tfstate
-
-      - name: Verify Terraform State File Exists
-        run: |
-          if [ ! -f terraform.tfstate ]; then
-            echo "Terraform state file not found!"
-            exit 1
-          fi
-
-      - name: Install Terraform
-        uses: hashicorp/setup-terraform@v3
-        with:
-          terraform_version: "1.5.0"
+        run: aws s3 cp s3://artefactos-jorge/terraform_state.tfstate ./ftp_ldap/terraform.tfstate
 
       - name: Initialize Terraform
-        run: terraform init -upgrade
+        run: terraform init
+        working-directory: ./ftp_ldap
 
       - name: Validate Terraform Plugins
         run: terraform providers
+        working-directory: ./ftp_ldap
 
       - name: Run Terraform Destroy
         run: terraform destroy -auto-approve
+        working-directory: ./ftp_ldap
 
       - name: Delete Terraform State File from S3
         run: aws s3 rm s3://artefactos-jorge/terraform_state.tfstate
