@@ -1,19 +1,4 @@
-variable "aws_access_key_id" {
-  type = string
-}
 
-variable "aws_secret_access_key" {
-  type = string
-}
-
-variable "aws_session_token" {
-  type = string
-}
-
-variable "public_key" {
-  description = "Clave pública SSH para acceder a la instancia"
-  type        = string
-}
 
 variable "region" {
   description = "La región de AWS donde se crearán los recursos"
