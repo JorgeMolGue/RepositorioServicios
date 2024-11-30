@@ -11,13 +11,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Verify Terraform Files
-        run: ls -l ./ftp_ldap
-
-      - name: Remove Terraform Cache
-        run: rm -rf .terraform .terraform.lock.hcl
-        working-directory: ./ftp_ldap
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -33,12 +26,13 @@ jobs:
         run: terraform init
         working-directory: ./ftp_ldap
 
-      - name: Validate Terraform Plugins
-        run: terraform providers
-        working-directory: ./ftp_ldap
-
       - name: Run Terraform Destroy
-        run: terraform destroy -auto-approve
+        run: |
+          terraform destroy -auto-approve \
+            -var "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+            -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+            -var "aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}" \
+            -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
         working-directory: ./ftp_ldap
 
       - name: Delete Terraform State File from S3
