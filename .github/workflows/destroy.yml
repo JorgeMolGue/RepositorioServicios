@@ -39,7 +39,12 @@ jobs:
         run: terraform init
 
       - name: Run Terraform Destroy
-        run: terraform destroy -auto-approve
+        run: |
+         terraform destroy -auto-approve \
+          -var "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" \
+          -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" \
+          -var "aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}" \
+          -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
 
       - name: Delete Terraform State File from S3
         run: |
