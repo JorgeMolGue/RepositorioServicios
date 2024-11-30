@@ -33,11 +33,6 @@ aws_access_key_id=ASIA2MS22DL2OS3CQ4QG
 aws_secret_access_key=FTVFzLnaMFiIi3zLBRy5LWhG+6cfkKWnl0jKziiw
 aws_session_token=IQoJb3JpZ2luX2VjEOf//////////wEaCXVzLXdlc3QtMiJIMEYCIQDRP6W9AItvntwWBUNYFrkdLB/8EvNODfHyMO55to5EogIhAOzkvl24I9L4846xee89s1S958TwyaR/rmR15uDins9eKrgCCJD//////////wEQABoMNzE0MjI4NzY3NDc2Igz0GUjyCIPdyf6Sx/MqjAJcqsPx4p5ENvkxUsGgQdwhwAQfcyQF2dR7PwgTBIuewNBfSntFeU5MMvB7g4Mf7ikmbRH+Px282WNq7uazJdGO/VXM68fk9vlLfaPBWTEMqATFHlhlNNL3DoicMen4rlj4XGtf8sUoJ8oXZkSxoh3HYAopU1c3cRun4pTG+amVkFAPs2WAZneM2gnoEse8BqVio7FcexeE88Fo4Ib19gafCYkI/s5CaZ7B8DhNMd1g5IVxp1besvyN9680TGTHzqZ/ntYcK4Os1VMKw8w9FzXZATEwjucGw58LgLzJj7L+5K0hW9jo9LdeMwhOrFrYBROAJuffzKrH2EGVpwdRINvnlWTeZkxftFW8nZKiMJ3CrLoGOpwBoq8skoSfDCfXBLbJBoGf6rtlextl2hrVRy1uLRIuYY3v2sGJz8wrTdOLcoF5/r/AXlrhBI9o9Fdr2c7ycHELmc8RqKjAkMuKPGiVXdUaCvaWfqVX1iZ9ctA70F/8b4uVLYarZfk0bnEeG4KTJL8kAb+CNxiXddRgUJvXHakXDztGaXJ23LmvEmw7eVQxEdlDe/5Sqx/sNbNNJtPd
 EOF
-
-
-# Montar el bucket S3 en el directorio del FTP
-sudo s3fs ftp-storage-7142-2876-7476  /mnt/bucket-s3 -o allow_other
-
 set +x
 sudo apt install cron -y
 # Crear directorio para el FTP
@@ -56,6 +51,10 @@ sudo systemctl enable cron
 
 # Añadir el cron job automáticamente si no existe
 (crontab -l 2>/dev/null; echo "* * * * * rsync -av --remove-source-files /home/admin/ftp/ /mnt/bucket-s3/") | crontab -
+
+
+# Montar el bucket S3 en el directorio del FTP
+sudo s3fs ftp-storage-7142-2876-7476  /mnt/bucket-s3 -o allow_other
 
 
 # Crear directorio para el Dockerfile
