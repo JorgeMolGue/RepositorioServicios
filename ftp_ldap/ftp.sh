@@ -24,7 +24,7 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 # Instalar s3fs
 sudo apt update
 sudo apt install s3fs -y
-
+set -x
 # Configurar credenciales de AWS
 mkdir -p ~/.aws
 cat > ~/.aws/credentials <<EOF
@@ -38,6 +38,7 @@ EOF
 # Montar el bucket S3 en el directorio del FTP
 sudo s3fs ftp-storage-7142-2876-7476  /mnt/bucket-s3 -o allow_other
 
+set +x
 sudo apt install cron -y
 # Crear directorio para el FTP
 sudo mkdir -p /home/admin/ftp
