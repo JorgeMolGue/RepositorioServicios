@@ -24,7 +24,7 @@ public_subnet_vpc2_name  = "public-subnet-vpc2"
 #instancia
 instance_type = "t2.micro"
 ami = "ami-064519b8c76274859"  # Cambia a la AMI que desees usar
-key_name = "ssh_susana"       # Asegúrate de que el par de claves ya exista en la región
+key_name = "ssh"       # Asegúrate de que el par de claves ya exista en la región
 
 
 #bucket
