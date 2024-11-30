@@ -24,27 +24,24 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: "us-east-1"
 
-      - name: Clave SSH
-        run: echo "${{ secrets.SSH_PRIVATE_KEY }}"
-
       - name: Terraform Init
         run: terraform init
-        working-directory: ./conexion_VPC
+        working-directory: ./ftp_ldap
 
       - name: Terraform Plan
-        run: terraform plan
-        working-directory: ./conexion_VPC
+        run: terraform plan -var "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -var "aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}" -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
+        working-directory: ./ftp_ldap
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve
-        working-directory: ./conexion_VPC
+        run: terraform apply -auto-approve -var "aws_access_key_id=${{ secrets.AWS_ACCESS_KEY_ID }}" -var "aws_secret_access_key=${{ secrets.AWS_SECRET_ACCESS_KEY }}" -var "aws_session_token=${{ secrets.AWS_SESSION_TOKEN }}" -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
+        working-directory: ./ftp_ldap
 
       # Guardar el archivo terraform.tfstate como artefacto
       - name: Upload Terraform State as Artifact
         uses: actions/upload-artifact@v4
         with:
           name: terraform_state
-          path: ./conexion_VPC/terraform.tfstate
+          path: ./ftp_ldap/terraform.tfstate
 
   upload_to_s3:
     runs-on: ubuntu-latest
