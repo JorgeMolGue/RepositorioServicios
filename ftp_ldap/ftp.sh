@@ -27,9 +27,9 @@ sudo apt install s3fs -y
 sudo mkdir -p ~/.aws
 sudo cat > ~/.aws/credentials <<EOF
 [default]
-aws_access_key_id=ASIA2MS22DL2NGCN6BGT
-aws_secret_access_key=4HXdPdkbLbPvLVcmv/+D8zH9fKWmhFCoVZ/QXH7F
-aws_session_token=IQoJb3JpZ2luX2VjENT//////////wEaCXVzLXdlc3QtMiJGMEQCIFC+/HAqONYWTlEgcYXlN+1oCZBgq5lBR6FycpSbRhWgAiBAMB9kCg3UtJmycGK0s3OrW9kZd/iHlIAzq1xB2KTr0CqvAgh9EAAaDDcxNDIyODc2NzQ3NiIMflBQCio11OKCMUTKKowCxjdSx4dSWteGOTLFlNNM6pZvRTP7O8DD0EJU/O61lLuc5lGnDJP5IPXZwl8vRpvry+LiYkxp6nneuMqibn45GDnk+BuDc876qCZbuQUhIhImouozpuZkVS29HTlo+3HeXmF+gWzMF391YPZPtHuVSmnNeOk20glFgAsv3z5CmAWS6OGDMgQm7aqwbJerwd6K6Y14tCpYfVRJgbjy1WUjHtt/W0rgtM2MgO09UewE62VqU02aMR6aC1hZ3H2lG70ZtqCiqjj+TUsBaPD+e0NSBW0fBYHKp+7A4vfHZXg0dERwHNq8hOZKe+hjzfUaoU5gZxkyImJLll7Iu/XYJh3DhpB4cv3nEikvXoKBqTDWsai6BjqeAaGSeI5Le4Waaz+bo3+6sS68rTxYPV2HnwoxRwY7bj0/+RreOHoofEZaLMiq60HFcheB3JsbHOmrpaBW3pQXl9YwCWHyud66IlEEkml3R1kjt6RFWgIBexOf2k/6qOmxWW6HAe29TOqISyv2mgEVx1+MdctQP0IMFgaznQrIqyG9Wav2+I4tJwzi1TdSLZovrTBrcXbe5pbOUoTRBWQV
+aws_access_key_id=${var.aws_access_key_id}
+aws_secret_access_key=${var.aws_secret_access_key}
+aws_session_token=${var.aws_session_token}
 EOF
 sudo apt install cron -y
 # Crear directorio para el FTP
