@@ -11,6 +11,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Remove Terraform Cache
+        run: rm -rf .terraform .terraform.lock.hcl
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -20,8 +23,7 @@ jobs:
           aws-region: "us-east-1"
 
       - name: Download Terraform State from S3
-        run: |
-          aws s3 cp s3://artefactos-jorge/terraform_state.tfstate ./terraform.tfstate
+        run: aws s3 cp s3://artefactos-jorge/terraform_state.tfstate ./terraform.tfstate
 
       - name: Verify Terraform State File Exists
         run: |
@@ -35,16 +37,14 @@ jobs:
         with:
           terraform_version: "1.5.0"
 
-      - name: Clear Terraform Plugin Cache
-        run: |
-          rm -rf .terraform
-
       - name: Initialize Terraform
-        run: terraform init
+        run: terraform init -upgrade
+
+      - name: Validate Terraform Plugins
+        run: terraform providers
 
       - name: Run Terraform Destroy
         run: terraform destroy -auto-approve
 
       - name: Delete Terraform State File from S3
-        run: |
-          aws s3 rm s3://artefactos-jorge/terraform_state.tfstate
+        run: aws s3 rm s3://artefactos-jorge/terraform_state.tfstate
