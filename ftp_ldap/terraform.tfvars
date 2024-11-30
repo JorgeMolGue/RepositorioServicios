@@ -26,5 +26,6 @@ instance_type = "t2.micro"
 ami = "ami-064519b8c76274859"  # Cambia a la AMI que desees usar
 key_name = "ssh"       # Asegúrate de que el par de claves ya exista en la región
 
+
 #bucket
 bucket_name = "ftp-storage-7142-2876-7476"
