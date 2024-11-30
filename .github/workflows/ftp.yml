@@ -1,4 +1,4 @@
-name: proft
+name: proftpd_ldap
 
 on:
   workflow_dispatch:
