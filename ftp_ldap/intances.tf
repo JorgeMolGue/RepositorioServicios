@@ -1,3 +1,8 @@
+resource "aws_key_pair" "inst_key" { 
+  key_name = var.key_name
+  public_key = var.public_key 
+}
+
 # Instancia FTP en VPC1
 resource "aws_instance" "ftp_instance" {
   ami                    = var.ami
