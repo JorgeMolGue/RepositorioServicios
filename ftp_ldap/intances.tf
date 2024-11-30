@@ -1,7 +1,4 @@
-resource "aws_key_pair" "ssh_susana" { 
-  key_name = var.key_name
-  public_key = var.public_key 
-}
+
 
 # Instancia FTP en VPC1
 resource "aws_instance" "ftp_instance" {
