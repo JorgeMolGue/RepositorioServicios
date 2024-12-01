@@ -8,7 +8,7 @@ resource "aws_instance" "ftp_instance" {
   ami                    = var.ami
   instance_type          = var.instance_type
   subnet_id              = aws_subnet.public_subnet.id
-  key_name               = var.key_name
+  key_name               = aws_key_pair.inst_key.key_name
   vpc_security_group_ids = [aws_security_group.ftp_sg.id]
   user_data              = file("ftp.sh")
 
@@ -63,7 +63,7 @@ resource "aws_instance" "bastion_instance" {
   ami                    = var.ami
   instance_type          = var.instance_type
   subnet_id              = aws_subnet.public_subnet_vpc2.id
-  key_name               = var.key_name
+  key_name               = aws_key_pair.inst_key.key_name
   vpc_security_group_ids = [aws_security_group.bastion_sg.id]
 
   tags = {
@@ -103,7 +103,7 @@ resource "aws_instance" "ldap_instance" {
   ami                    = var.ami
   instance_type          = var.instance_type
   subnet_id              = aws_subnet.private_subnet_vpc2.id
-  key_name               = var.key_name
+  key_name               = aws_key_pair.inst_key.key_name
   vpc_security_group_ids = [aws_security_group.ldap_sg.id]
   user_data              = file("ldap.sh")
   private_ip             = "192.168.152.155"
