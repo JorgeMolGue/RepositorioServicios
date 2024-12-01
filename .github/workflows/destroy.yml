@@ -31,7 +31,7 @@ jobs:
 
       - name: Verify Terraform State File Exists
         run: |
-          if [ ! -f ./terraform/terraform.tfstate ]; then
+          if [ ! -f ./ftp_ldap/terraform.tfstate ]; then
             echo "Terraform state file not found!"
             exit 1
           fi
