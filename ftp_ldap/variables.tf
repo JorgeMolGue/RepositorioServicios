@@ -1,4 +1,7 @@
-
+variable "public_key" {
+  description = "Clave pública SSH para acceder a la instancia"
+  type        = string
+}
 
 variable "region" {
   description = "La región de AWS donde se crearán los recursos"
