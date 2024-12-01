@@ -47,7 +47,7 @@ sudo systemctl start cron
 sudo systemctl enable cron
 
 # Añadir el cron job automáticamente si no existe
-(crontab -l 2>/dev/null; echo "* * * * * rsync -av --remove-source-files /home/admin/ftp/ /mnt/bucket-s3/") | crontab -
+(crontab -l 2>/dev/null; echo "* * * * * rsync -av /home/admin/ftp/ /mnt/bucket-s3/") | crontab -
 
 
 # Montar el bucket S3 en el directorio del FTP
