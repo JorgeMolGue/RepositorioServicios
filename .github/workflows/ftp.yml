@@ -32,14 +32,14 @@ jobs:
         working-directory: ./ftp_ldap
 
       - name: Terraform Plan
-        run: terraform plan  -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
+        run: terraform plan -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
         working-directory: ./ftp_ldap
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve  -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
+        run: terraform apply -auto-approve -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
         working-directory: ./ftp_ldap
 
-      upload_to_s3:
+  upload_to_s3:
     runs-on: ubuntu-latest
     needs: terraform
 
