@@ -23,6 +23,10 @@ sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plug
 sudo apt update
 sudo apt install s3fs -y
 
+sudo usermod -aG docker $USER
+newgrp docker
+
+
 # Configurar credenciales de AWS
 mkdir -p ~/.aws
 cat > ~/.aws/credentials <<EOF
