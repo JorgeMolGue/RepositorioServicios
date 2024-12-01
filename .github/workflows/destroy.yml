@@ -27,7 +27,7 @@ jobs:
       - name: Download Terraform State from S3
         run: |
           mkdir -p ./terraform
-          aws s3 cp s3://artefactos-jorge/terraform_state.tfstate ./terraform/terraform.tfstate
+          aws s3 cp s3://artefactos-jorge/terraform.tfstate ./terraform/terraform.tfstate
 
       - name: Verify Terraform State File Exists
         run: |
@@ -47,8 +47,8 @@ jobs:
 
       - name: Empty S3 Bucket Before Destroy
         run: |
-          aws s3 rm s3://acorrod24081 --recursive
-          versions=$(aws s3api list-object-versions --bucket acorrod24081 --query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}')
+          aws s3 rm s3://artefactos-jorge --recursive
+          versions=$(aws s3api list-object-versions --bucket artefactos-jorge --query='{Objects: Versions[].{Key:Key,VersionId:VersionId}}')
           aws s3api delete-objects --bucket artefactos-jorge --delete "$versions" || true
 
       - name: Run Terraform Destroy
@@ -59,4 +59,4 @@ jobs:
 
       - name: Delete Terraform State File from S3
         run: |
-          aws s3 rm s3://artefactos-jorge/terraform_state.tfstate || true
+          aws s3 rm s3://artefactos-jorge/terraform.tfstate || true
