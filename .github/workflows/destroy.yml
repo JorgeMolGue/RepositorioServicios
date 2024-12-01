@@ -26,8 +26,8 @@ jobs:
 
       - name: Download Terraform State from S3
         run: |
-          mkdir -p ./terraform
-          aws s3 cp s3://artefactos-jorge/terraform.tfstate ./terraform/terraform.tfstate
+          mkdir -p ./ftp_ldap
+          aws s3 cp s3://artefactos-jorge/terraform.tfstate ./ftp_ldap/terraform.tfstate
 
       - name: Verify Terraform State File Exists
         run: |
