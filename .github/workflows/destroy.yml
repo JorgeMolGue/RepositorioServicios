@@ -35,14 +35,19 @@ jobs:
             -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
         working-directory: ./ftp_ldap
 
-      - name: Verify if Terraform State File Exists on S3
+      - name: Verify if Terraform State exists in S3
         run: |
-          aws s3 ls s3://artefactos-jorge/terraform_state.tfstate || echo "File does not exist"
-        
-      - name: Delete Terraform State File from S3
+          if aws s3 ls s3://artefactos-jorge/terraform_state.tfstate; then
+            echo "terraform_state.tfstate found in S3. Proceeding to download..."
+          else
+            echo "terraform_state.tfstate not found in S3. Exiting."
+            exit 1
+          fi
+
+      - name: Download Terraform State from S3
         run: |
-          echo "Attempting to delete terraform_state.tfstate from S3"
-          aws s3 rm s3://artefactos-jorge/terraform_state.tfstate || echo "Error deleting file"
+          aws s3 cp s3://artefactos-jorge/terraform_state.tfstate ./ftp_ldap/terraform.tfstate
+
         
       - name: Confirm deletion of Terraform State File from S3
         run: |
