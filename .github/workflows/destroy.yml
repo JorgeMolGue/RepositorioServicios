@@ -19,8 +19,19 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: "us-east-1"
 
-      - name: Download Terraform State from S3
-        run: aws s3 cp s3://artefactos-jorge/terraform_state.tfstate ./ftp_ldap/terraform.tfstate
+      - name: Check if terraform_state file exists in S3
+        run: |
+          aws s3 ls s3://artefactos-jorge/terraform_state_${GITHUB_RUN_ID}.tfstate || echo "terraform_state.tfstate not found in S3"
+
+      - name: Download Terraform State from S3 with unique name
+        run: |
+          if aws s3 ls s3://artefactos-jorge/terraform_state_${GITHUB_RUN_ID}.tfstate; then
+            echo "terraform_state.tfstate found, downloading..."
+            aws s3 cp s3://artefactos-jorge/terraform_state_${GITHUB_RUN_ID}.tfstate ./ftp_ldap/terraform.tfstate
+          else
+            echo "terraform_state.tfstate not found in S3, aborting."
+            exit 1
+          fi
 
       - name: Initialize Terraform
         run: terraform init
@@ -35,20 +46,15 @@ jobs:
             -var "public_key=${{ secrets.SSH_PUBLIC_KEY }}"
         working-directory: ./ftp_ldap
 
-      - name: Verify if Terraform State exists in S3
+      - name: Verify if Terraform State File Exists on S3
         run: |
-          if aws s3 ls s3://artefactos-jorge/terraform_state.tfstate; then
-            echo "terraform_state.tfstate found in S3. Proceeding to download..."
-          else
-            echo "terraform_state.tfstate not found in S3. Exiting."
-            exit 1
-          fi
+          aws s3 ls s3://artefactos-jorge/terraform_state_${GITHUB_RUN_ID}.tfstate || echo "File does not exist"
 
-      - name: Download Terraform State from S3
+      - name: Delete Terraform State File from S3
         run: |
-          aws s3 cp s3://artefactos-jorge/terraform_state.tfstate ./ftp_ldap/terraform.tfstate
+          echo "Attempting to delete terraform_state.tfstate from S3"
+          aws s3 rm s3://artefactos-jorge/terraform_state_${GITHUB_RUN_ID}.tfstate || echo "Error deleting file"
 
-        
       - name: Confirm deletion of Terraform State File from S3
         run: |
-          aws s3 ls s3://artefactos-jorge/terraform_state.tfstate || echo "File successfully deleted or does not exist"
+          aws s3 ls s3://artefactos-jorge/terraform_state_${GITHUB_RUN_ID}.tfstate || echo "File successfully deleted or does not exist"
