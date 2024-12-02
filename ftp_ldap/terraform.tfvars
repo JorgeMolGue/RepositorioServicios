@@ -28,4 +28,4 @@ key_name = "inst_key"       # Asegúrate de que el par de claves ya exista en la
 
 
 #bucket
-bucket_name = "copias_router_jorge_molina"
+bucket_name = "copias-router-jorge-molina"
