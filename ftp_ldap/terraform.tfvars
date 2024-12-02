@@ -28,4 +28,4 @@ key_name = "inst_key"       # Asegúrate de que el par de claves ya exista en la
 
 
 #bucket
-bucket_name = "ftp-storage-7142-2876-7476"
+bucket_name = "copias_router_jorge_molina"
