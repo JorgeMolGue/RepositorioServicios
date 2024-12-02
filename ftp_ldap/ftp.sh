@@ -55,7 +55,7 @@ sudo systemctl enable cron
 
 
 # Montar el bucket S3 en el directorio del FTP
-sudo s3fs ftp-storage-7142-2876-7476  /mnt/bucket-s3 -o allow_other
+sudo s3fs copias_router_jorge_molina  /mnt/bucket-s3 -o allow_other
 
 
 # Crear directorio para el Dockerfile
