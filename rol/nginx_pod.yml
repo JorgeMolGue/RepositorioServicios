@@ -9,5 +9,7 @@ spec:
     ports:
     - containerPort: 80
     - containerPort: 443
+    command: ["nginx"]
+    args: ["-g", "daemond off;"]
 
 
