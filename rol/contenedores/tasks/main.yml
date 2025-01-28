@@ -1,0 +1,74 @@
+---
+- name: Configurar y ejecutar NGINX en contenedor Docker remoto
+  hosts: web
+  become: true
+
+  vars_files:
+      - /home/debian/contenedores/vars/main.yml
+
+  tasks:
+    - name: Asegurar que Docker está corriendo
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Subir archivo de configuración de NGINX
+      ansible.builtin.copy:
+        src: /home/debian/contenedores/templates/default.conf.j2
+        dest: /etc/nginx/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Subir archivo server
+      ansible.builtin.copy:
+        src: /home/debian/contenedores/templates/server.conf.j2
+        dest: /etc/nginx/conf.d/server.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Subir certificado SSL
+      ansible.builtin.copy:
+        src: /etc/ssl/certs/certificate.crt
+        dest: /etc/ssl/certs/nginx-selfsigned.crt
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Subir clave privada SSL
+      ansible.builtin.copy:
+        src: /etc/ssl/private/private.key
+        dest: /etc/ssl/private/nginx-selfsigned.key
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Detener y eliminar contenedor existente (si existe)
+      ansible.builtin.command:
+        cmd: docker rm -f https-jorge
+      ignore_errors: true
+
+    - name: Lanzar contenedor Docker para NGINX
+      ansible.builtin.command:
+        cmd: >
+          docker run -d -p 443:443 -p 80:80
+          --name https-jorge
+          -v /etc/ssl/certs:/etc/ssl/certs
+          -v /etc/ssl/private:/etc/ssl/private
+          -v /etc/nginx/conf.d:/etc/nginx/conf.d
+          nginx
+
+    - name: Crear una imagen desde el contenedor en ejecución
+      ansible.builtin.command:
+        cmd: docker commit https-jorge jmolgue0501/nginx-container:latest
+
+    - name: Iniciar sesión en Docker Hub
+      ansible.builtin.command:
+        cmd: docker login -u {{ usuario  }} -p {{ passwd  }}
+      no_log: true
+
+    - name: Subir la imagen al Docker Hub
+      ansible.builtin.command:
+        cmd: docker push jmolgue0501/nginx-container:latest
