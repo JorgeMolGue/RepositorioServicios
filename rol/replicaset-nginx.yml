@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: web-replicaset
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: web
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      imagePullSecrets:
+      - name: ecr-secret  
+      containers:
+      - name: nginx-container
+        image: 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80
