@@ -1,4 +1,4 @@
-user  nginx;
+user  www-data;
 worker_processes  auto;
 
 error_log  /var/log/nginx/error.log warn;
@@ -23,5 +23,5 @@ http {
     keepalive_timeout  65;
 
     # Aquí se incluyen los bloques de configuración del servidor
-    include /etc/nginx/conf.d/server.conf.j2;
+    include /etc/nginx/conf.d/server.conf;
 }

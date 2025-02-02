@@ -10,18 +10,52 @@
         state: started
         enabled: true
 
+    - name: Copiar pagina web
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/index.html.j2
+        dest: /home/jorge/web/index.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar pagina web en ingles
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/indexingles.html.j2
+        dest: /home/jorge/web/indexingles.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar pagina web de errores
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/errores.html.j2
+        dest: /home/jorge/web/errores.html
+        owner: root
+        group: root
+        mode: "0644"
+
+
+
+    - name: Copiar Dockerfile al servidor remoto
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/Dockerfile.j2
+        dest: /home/jorge/web/Dockerfile
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: Subir archivo de configuración de NGINX
       ansible.builtin.copy:
-        src: /home/debian/contenedores/templates/default.conf.j2
-        dest: /etc/nginx/nginx.conf
+        src: /home/debian/webAmazon/templates/default.conf.j2
+        dest: /home/jorge/web/nginx.conf
         owner: root
         group: root
         mode: '0644'
 
     - name: Subir archivo server
       ansible.builtin.copy:
-        src: /home/debian/contenedores/templates/server.conf.j2
-        dest: /etc/nginx/conf.d/server.conf
+        src: /home/debian/webAmazon/templates/server.conf.j2
+        dest: /home/jorge/web/server.conf
         owner: root
         group: root
         mode: '0644'
@@ -29,7 +63,7 @@
     - name: Subir certificado SSL
       ansible.builtin.copy:
         src: /etc/ssl/certs/certificate.crt
-        dest: /etc/ssl/certs/nginx-selfsigned.crt
+        dest: /home/jorge/web/ca_bundle.crt
         owner: root
         group: root
         mode: '0644'
@@ -37,7 +71,7 @@
     - name: Subir clave privada SSL
       ansible.builtin.copy:
         src: /etc/ssl/private/private.key
-        dest: /etc/ssl/private/nginx-selfsigned.key
+        dest: /home/jorge/web/private.key
         owner: root
         group: root
         mode: '0600'
@@ -47,32 +81,23 @@
         cmd: docker rm -f https-jorge
       ignore_errors: true
 
+    - name: Construir imagen Docker
+      ansible.builtin.command:
+        cmd: docker build -t https-jorge /home/jorge/web/
+
     - name: Lanzar contenedor Docker para NGINX
       ansible.builtin.command:
         cmd: >
           docker run -d -p 443:443 -p 80:80
-          --name https-jorge
-          -v /etc/ssl/certs:/etc/ssl/certs
-          -v /etc/ssl/private:/etc/ssl/private
-          -v /etc/nginx/conf.d:/etc/nginx/conf.d
-          nginx
+           --name https-jorge https-jorge
 
-    - name: Crear una imagen desde el contenedor en ejecución
-      ansible.builtin.command:
-        cmd: docker commit https-jorge jmolgue0501/nginx-container:latest
-
-     - name: Autenticarse en Amazon ECR
-      ansible.builtin.shell:
-        cmd: >
-         aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 714228767476.dkr.ecr.us-east-1.amazonaws.com
 
     - name: Etiquetar la imagen de subida
       ansible.builtin.command:
         cmd: >
-         docker tag jmolgue0501/nginx-container:latest 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
+          docker tag https-jorge:latest 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
 
     - name: Subir la imagen a ECR de Amazon
       ansible.builtin.command:
         cmd: >
-         docker push 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
-
+          docker push 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
