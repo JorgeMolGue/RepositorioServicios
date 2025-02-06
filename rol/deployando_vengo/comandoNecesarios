@@ -1,0 +1,12 @@
+seleccionas la imagen con la version que quermos
+kubectl set image deployment/web web=714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
+kubectl set image deployment/web web=714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-2
+  
+ver los pods
+kubectl get pod
+
+pruebas para ver que funciona desde navegador
+kubectl port-forward pod/web-7b754ddd7-9trns 8080:80 8443:443
+
+historial
+kubectl rollout history deployment web
