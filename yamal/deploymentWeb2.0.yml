@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jorge-web-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jorge-web
+  template:
+    metadata:
+      labels:
+        app: jorge-web
+    spec:
+      containers:
+        - name: jorge-web
+          image: 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+            - containerPort: 443
+          volumeMounts:
+            - mountPath: "/var/www/html"
+              name: php-storage
+      imagePullSecrets:
+        - name: ecr-secret
+      volumes:
+        - name: php-storage
+          persistentVolumeClaim:
+            claimName: php-pvc
