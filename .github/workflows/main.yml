@@ -23,4 +23,7 @@ jobs:
         run: aws eks update-kubeconfig --name grado --region us-east-1
 
       - name: Lanzar los yamal
+        run: kubectl apply -f yamal/apache.yml
+
+      - name: Lanzar los yamal
         run: kubectl apply -f yamal/
