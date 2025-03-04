@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: php-fpm-deployment
+  labels:
+    app: php-fpm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: php-fpm
+  template:
+    metadata:
+      labels:
+        app: php-fpm
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      containers:
+        - name: php-fpm
+          image: 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:php
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 9000
+          volumeMounts:
+            - mountPath: /var/www/html
+              name: php-storage
+      volumes:
+        - name: php-storage
+          persistentVolumeClaim:
+            claimName: php-pvc
