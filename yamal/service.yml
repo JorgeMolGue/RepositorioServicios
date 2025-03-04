@@ -1,0 +1,91 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: jorge-web
+spec:
+  selector:
+    app: jorge-web
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+    - name: https
+      protocol: TCP
+      port: 443
+      targetPort: 443
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: php-fpm-service
+  labels:
+    app: php-fpm
+spec:
+  selector:
+    app: php-fpm
+  ports:
+    - name: php-fpm-port
+      protocol: TCP
+      port: 9000
+      targetPort: 9000
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql-service
+  labels:
+    app: mysql
+spec:
+  selector:
+    app: mysql
+  ports:
+    - name: mysql-port
+      protocol: TCP
+      port: 3306
+      targetPort: 3306
+  type: ClusterIP
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: apache-service
+  labels:
+    app: apache
+spec:
+  selector:
+    app: apache
+  ports:
+    - name: apache-port
+      protocol: TCP
+      port: 8080
+      targetPort: 8080
+  type: LoadBalancer
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: ldap-service
+  labels:
+    app: ldap
+spec:
+  selector:
+    app: ldap
+  ports:
+    - name: ldap-port
+      protocol: TCP
+      port: 389
+      targetPort: 389
+  type: ClusterIP
