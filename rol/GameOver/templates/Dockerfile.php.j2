@@ -1,0 +1,10 @@
+FROM php:8.0-fpm
+
+# Instalar las dependencias necesarias para la extensión mysqli
+RUN apt-get update && apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev
+
+# Instalar la extensión mysqli
+RUN docker-php-ext-install mysqli
+
+#Expón el puerto 9000 para PHP-FPM
+EXPOSE 9000

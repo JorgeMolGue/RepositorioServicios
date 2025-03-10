@@ -1,0 +1,18 @@
+  GNU nano 7.2                                                                                          main.yml                                                                                                   
+---
+- name: Configurar y ejecutar NGINX en contenedor Docker remoto
+  hosts: web
+  become: true
+
+ - name: Construyendo imagen APACHE
+      ansible.builtin.command:
+        cmd: docker build -t apache /home/jorge/web/apache/
+
+    - name: Etiquetar la imagen APACHE para ECR
+      ansible.builtin.command:
+        cmd: docker tag apache:latest 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:apache
+
+    - name: Subir la imagen APACHE a ECR
+      ansible.builtin.command:
+        cmd: docker push 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:apache
+

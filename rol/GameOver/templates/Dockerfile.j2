@@ -1,0 +1,37 @@
+FROM debian:latest
+
+RUN apt update -y && \
+    apt install -y nginx && \
+    mkdir -p /etc/nginx/conf.d /etc/ssl/private && \
+    chmod 755 /etc/nginx/conf.d /etc/ssl/private
+
+# Crear usuario 'juan' con su directorio público
+RUN useradd -m -d /home/juan -s /bin/bash juan && \
+    mkdir -p /home/juan/public_html && \
+    echo "<h1>Bienvenido a la pagina de Juan</h1>" > /home/juan/public_html/index.html && \
+    chown -R juan:juan /home/juan/public_html && \
+    chmod -R 755 /home/juan/public_html
+
+# Crear usuario 'juan' con su directorio público
+RUN useradd -m -d /home/jose -s /bin/bash jose && \
+    mkdir -p /home/jose/public_html && \
+    echo "<h1>Bienvenido a la pagina de Jose</h1>" > /home/jose/public_html/index.html && \
+    chown -R jose:jose /home/jose/public_html && \
+    chmod -R 755 /home/jose/public_html
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY server.conf /etc/nginx/conf.d/server.conf
+COPY ca_bundle.crt /etc/ssl/certs/ca_bundle.crt
+COPY private.key /etc/ssl/private/private.key
+COPY index.html /etc/nginx/html/index.html
+COPY indexingles.html /etc/nginx/html/en/index.html
+COPY indexingles2.html /etc/nginx/html/en/index2.html
+COPY indexingles3.html /etc/nginx/html/en/index3.html
+COPY index.html /etc/nginx/html/es/index.html
+COPY index2.html /etc/nginx/html/es/index2.html
+COPY index3.html /etc/nginx/html/es/index3.html
+COPY index2.html /etc/nginx/html/index2.html
+COPY index3.html /etc/nginx/html/index3.html
+COPY estilos.css /etc/nginx/html/css/estilos.css
+COPY errores.html /etc/nginx/html/errores.html
+CMD ["nginx", "-g", "daemon off;"]

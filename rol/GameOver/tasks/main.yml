@@ -1,0 +1,302 @@
+---
+- name: Configurar y ejecutar NGINX en contenedor Docker remoto
+  hosts: web
+  become: true
+
+  tasks:
+    - name: Asegurar que Docker está corriendo
+      ansible.builtin.service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Copiar pagina web
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/index.html.j2
+        dest: /home/jorge/web/index.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar segunda pagina web
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/index2.html.j2
+        dest: /home/jorge/web/index2.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar tercera pagina web
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/index3.html.j2
+        dest: /home/jorge/web/index3.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar css
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/estilos.css.j2
+        dest: /home/jorge/web/estilos.css
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar pagina web en ingles
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/indexingles.html.j2
+        dest: /home/jorge/web/indexingles.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar pagina web en ingles
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/indexingles2.html.j2
+        dest: /home/jorge/web/indexingles2.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar pagina web en ingles
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/indexingles3.html.j2
+        dest: /home/jorge/web/indexingles3.html
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar pagina web de errores
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/errores.html.j2
+        dest: /home/jorge/web/errores.html
+        owner: root
+        group: root
+        mode: "0644"
+
+
+
+    - name: Copiar Dockerfile nginx al servidor remoto
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/Dockerfile.j2
+        dest: /home/jorge/web/Dockerfile
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar Dockerfile php al servidor remoto
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/Dockerfile.php.j2
+        dest: /home/jorge/php/Dockerfile
+        owner: root
+        group: root
+        mode: "0644"
+
+    - name: Copiar Dockerfile mysql al servidor remoto
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/Dockerfile.mysql.j2
+        dest: /home/jorge/mysql/Dockerfile
+        owner: root
+        group: root
+        mode: "0644"
+
+
+    - name: Subir archivo de configuración de NGINX
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/default.conf.j2
+        dest: /home/jorge/web/nginx.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Subir archivo server
+      ansible.builtin.copy:
+        src: /home/debian/webAmazon/templates/server.conf.j2
+        dest: /home/jorge/web/server.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Subir certificado SSL
+      ansible.builtin.copy:
+        src: /etc/ssl/certs/certificate.crt
+        dest: /home/jorge/web/ca_bundle.crt
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Subir clave privada SSL
+      ansible.builtin.copy:
+        src: /etc/ssl/private/private.key
+        dest: /home/jorge/web/private.key
+        owner: root
+        group: root
+        mode: '0600'
+
+    - name: Detener y eliminar contenedor existente (si existe)
+      ansible.builtin.command:
+        cmd: docker rm -f https-jorge
+      ignore_errors: true
+
+    - name: Construir imagen Docker
+      ansible.builtin.command:
+        cmd: docker build -t https-jorge /home/jorge/web/
+
+    - name: Lanzar contenedor Docker para NGINX
+      ansible.builtin.command:
+        cmd: >
+          docker run -d -p 443:443 -p 80:80
+           --name https-jorge https-jorge
+
+
+    - name: Etiquetar la imagen de subida
+      ansible.builtin.command:
+        cmd: >
+          docker tag https-jorge:latest 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
+
+    - name: Subir la imagen a ECR de Amazon
+      ansible.builtin.command:
+        cmd: >
+          docker push 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:nginx-1
+
+#crear contenedor php
+    - name: Detener y eliminar contenedor existente (si existe)
+      ansible.builtin.command:
+        cmd: docker rm -f https-jorge-php
+      ignore_errors: true
+
+    - name: Construir imagen Docker
+      ansible.builtin.command:
+        cmd: docker build -t https-jorge-php /home/jorge/php/
+
+    - name: Lanzar contenedor Docker para NGINX
+      ansible.builtin.command:
+        cmd: >
+          docker run -d -p 9000:9000
+           --name https-jorge-php https-jorge-php
+
+
+    - name: Etiquetar la imagen de subida
+      ansible.builtin.command:
+        cmd: >
+          docker tag https-jorge-php:latest 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:php
+
+    - name: Subir la imagen a ECR de Amazon
+      ansible.builtin.command:
+        cmd: >
+          docker push 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:php
+
+#contenedor mysql
+
+    - name: Crear directorio para Dockerfile LDAP y APACHE
+      file:
+        path: /home/jorge/web/ldap
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Crear directorio para Dockerfile APACHE en maquina debian
+      file:
+        path: /home/jorge/web/apache
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Copiar Dockerfile de LDAP a maquina debian
+      template:
+        src: /home/debian/webAmazon/templates/Dockerfile_ldap.j2
+        dest: /home/jorge/web/ldap/Dockerfile
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copiar bootstrap.ldif de LDAP a maquina debian
+      template:
+        src: /home/debian/webAmazon/templates/bootstrap.ldif.j2
+        dest: /home/jorge/web/ldap/bootstrap.ldif
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copiar entrypoint de LDAP a maquina debian
+      template:
+        src: /home/debian/webAmazon/templates/entrypoint.sh.j2
+        dest: /home/jorge/web/ldap/entrypoint.sh
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copiar Dockerfile de APACHE a maquina debian
+      template:
+        src: /home/debian/webAmazon/templates/Dockerfile_apache.j2
+        dest: /home/jorge/web/apache/Dockerfile
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copiar configuración de Apache a maquina debian
+      template:
+        src: /home/debian/webAmazon/templates/auth_ldap.j2
+        dest: /home/jorge/web/apache/auth-ldap.conf
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Copiar página protegida a Apache
+      template:
+        src: /home/debian/webAmazon/templates/pagina-ldap.html.j2
+        dest: /home/jorge/web/apache/pagina-ldap.html
+        owner: root
+        group: root
+        mode: '0644'
+
+    - name: Construyendo imagen LDAP
+      ansible.builtin.command:
+        cmd: docker build -t ldap /home/jorge/web/ldap/
+
+    - name: Creando contenedor LDAP
+      ansible.builtin.command:
+        cmd: docker run -d -p 389:389 --name ldap ldap
+
+    - name: Creando OU y Usuarios en LDAP
+      ansible.builtin.command:
+        cmd: docker exec ldap ldapadd -x -D "cn=admin,dc=jorgeftp,dc=com" -w admin_password -f /tmp/bootstrap.ldif
+
+    - name: Configurando contraseña para usuario "jose" en LDAP
+      ansible.builtin.command:
+        cmd: docker exec ldap ldappasswd -x -D "cn=admin,dc=jorgeftp,dc=com" -w admin_password -s "jose" "uid=jose,ou=users,dc=jorgeftp,dc=com"
+
+    - name: Configurando contraseña para usuario "alejandro" en LDAP
+      ansible.builtin.command:
+        cmd: docker exec ldap ldappasswd -x -D "cn=admin,dc=jorgeftp,dc=com" -w admin_password -s "alejandro" "uid=alejandro,ou=users,dc=jorgeftp,dc=com"
+
+    - name: Reiniciando contenedor LDAP
+      ansible.builtin.command:
+        cmd: docker restart ldap
+
+    - name: Creando imagen LDAP con Docker commit
+      ansible.builtin.command:
+        cmd: docker commit ldap ldap2
+
+    - name: Etiquetar la imagen LDAP para ECR
+      ansible.builtin.command:
+        cmd: docker tag ldap2:latest 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:ldap
+
+    - name: Subir la imagen LDAP a ECR
+      ansible.builtin.command:
+        cmd: docker push 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:ldap
+
+    - name: Construyendo imagen APACHE
+      ansible.builtin.command:
+        cmd: docker build -t apache /home/jorge/web/apache/
+
+    - name: Etiquetar la imagen APACHE para ECR
+      ansible.builtin.command:
+        cmd: docker tag apache:latest 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:apache
+
+    - name: Subir la imagen APACHE a ECR
+      ansible.builtin.command:
+        cmd: docker push 714228767476.dkr.ecr.us-east-1.amazonaws.com/web:apache
+

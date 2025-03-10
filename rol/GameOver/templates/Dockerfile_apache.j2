@@ -1,0 +1,23 @@
+FROM debian:latest
+
+# Actualizar repositorios e instalar Apache y el módulo LDAP
+RUN apt-get update && apt-get install -y apache2 libapache2-mod-ldap-userdir
+
+# Habilitar módulos de Apache necesarios
+RUN a2enmod ldap authnz_ldap
+
+# Configurar Apache para escuchar en el puerto 8080
+RUN echo "Listen 8080" >> /etc/apache2/ports.conf
+
+# Copiar configuración LDAP y página protegida
+COPY auth-ldap.conf /etc/apache2/sites-available/
+COPY pagina-ldap.html /var/www/html/protected/
+
+# Habilitar la configuración de Apache
+RUN a2ensite auth-ldap.conf
+
+# Exponer el puerto 8080
+EXPOSE 8080
+
+# Iniciar Apache en primer plano
+CMD ["apachectl", "-D", "FOREGROUND"]

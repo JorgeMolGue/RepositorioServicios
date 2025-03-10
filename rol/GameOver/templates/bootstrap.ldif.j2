@@ -1,0 +1,32 @@
+dn: ou=users,dc=jorgeftp,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: users
+
+Usuario: jose
+dn: uid=jose,ou=users,dc=jorgeftp,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+cn: jose
+sn: Perez
+uid: jose
+mail: jose@jorgeftp.com
+userPassword: jose
+uidNumber: 1001
+gidNumber: 1001
+homeDirectory: /home/ftp/
+loginShell: /bin/bash
+
+Usuario: Alejandro
+dn: uid=alejandro,ou=users,dc=jorgeftp,dc=com
+objectClass: inetOrgPerson
+objectClass: posixAccount
+cn: alejandro
+sn: Garcia
+uid: alejandro
+mail: alejandro@jorgeftp.com
+userPassword: alejandro
+uidNumber: 1002
+gidNumber: 1002
+homeDirectory: /home/ftp/
+loginShell: /bin/bash

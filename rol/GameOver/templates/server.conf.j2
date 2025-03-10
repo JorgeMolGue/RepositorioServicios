@@ -1,0 +1,142 @@
+map $http_accept_language $lang {
+    default en;
+    ~*^es es;
+    ~*^en en;
+}
+
+server {
+    listen 80;
+    server_name localhost sitio2.localhost sitio3.localhost;
+
+    # Redirige todo el tráfico HTTP a HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name localhost ;
+
+    # Rutas de certificados SSL
+    ssl_certificate     /etc/ssl/certs/ca_bundle.crt;
+    ssl_certificate_key /etc/ssl/private/private.key;
+
+    # Configuración de la raíz y páginas
+    root /var/www/html;
+    index index.php;
+
+    # Servir archivos CSS desde /css (compartido para todos los idiomas)
+    location /css/ {
+        alias /etc/nginx/html/css/;
+    }
+
+     location / {
+
+        try_files /$lang$uri $lang$uri /$lang/index.html /index.php?$args;
+    }
+
+
+    # Manejo de archivos PHP
+    location ~ \.php$ {
+        fastcgi_pass php-fpm-service:9000;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    # Espacio de usuarios en /home/usuario/public_html
+    location ~ ^/~(.+?)(/.*)?$ {
+        alias /home/$1/public_html$2;
+        index index.html;
+        autoindex on;  # Mostrar archivos si no hay index.html
+    }
+
+    # Control de errores
+    error_page 404 /errores.html;
+    location = /errores.html {
+        internal;
+        root /etc/nginx/html;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name sitio2.localhost;
+
+    # Rutas de certificados SSL
+    ssl_certificate     /etc/ssl/certs/ca_bundle.crt;
+    ssl_certificate_key /etc/ssl/private/private.key;
+
+    # Configuración de la raíz y páginas
+    root /var/www/html;
+    index index2.html;
+
+    # Servir archivos CSS desde /css (compartido para todos los idiomas)
+    location /css/ {
+        alias /etc/nginx/html/css/;
+    }
+
+
+    # Espacio de usuarios en /home/usuario/public_html
+    location ~ ^/~(.+?)(/.*)?$ {
+        alias /home/$1/public_html$2;
+        index index.html;
+        autoindex on;  # Mostrar archivos si no hay index.html
+    }
+
+    # Control de errores
+    error_page 404 /errores.html;
+    location = /errores.html {
+        internal;
+        root /etc/nginx/html;
+    }
+}
+
+server {
+    listen 443 ssl;
+    server_name sitio3.localhost;
+
+    # Rutas de certificados SSL
+    ssl_certificate     /etc/ssl/certs/ca_bundle.crt;
+    ssl_certificate_key /etc/ssl/private/private.key;
+
+    # Configuración de la raíz y páginas
+    root /var/www/html;
+    index index3.html;
+
+    # Servir archivos CSS desde /css (compartido para todos los idiomas)
+    location /css/ {
+        alias /etc/nginx/html/css/;
+    }
+
+
+    # Espacio de usuarios en /home/usuario/public_html
+    location ~ ^/~(.+?)(/.*)?$ {
+        alias /home/$1/public_html$2;
+        index index.html;
+        autoindex on;  # Mostrar archivos si no hay index.html
+    }
+
+    # Control de errores
+    error_page 404 /errores.html;
+    location = /errores.html {
+        internal;
+        root /etc/nginx/html;
+    }
+}
+
+server {
+    listen 443;
+    server_name ldap.localhost;
+
+    ssl_certificate     /etc/ssl/certs/ca_bundle.crt;
+    ssl_certificate_key /etc/ssl/private/private.key;
+
+
+    location /protegido {
+        proxy_pass http://apache:8080/protegido;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}

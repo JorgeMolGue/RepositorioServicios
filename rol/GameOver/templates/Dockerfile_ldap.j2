@@ -1,0 +1,10 @@
+FROM osixia/openldap:1.5.0
+
+#Copiar archivos de configuración
+COPY bootstrap.ldif /tmp/bootstrap.ldif
+
+
+#Configurar variables de entorno
+ENV LDAP_ORGANISATION="jorges FTP"
+ENV LDAP_DOMAIN="jorgeftp.com"
+ENV LDAP_ADMIN_PASSWORD="admin_password"
